@@ -1,0 +1,39 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: prod-project
+  namespace: argocd
+spec:
+  description: Production environment applications
+
+  # Source repositories that applications can be deployed from
+  sourceRepos:
+    - 'https://github.com/damauer/k8s-app-manifests'
+
+  # Destination clusters and namespaces that applications can be deployed to
+  destinations:
+    - namespace: '*'
+      server: https://rust-k8s-control-plane:6443  # PROD cluster (remote)
+
+  # Cluster resources that may be managed
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Namespace resources that may be managed
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Sync policies - more restrictive for production
+  syncWindows:
+    - kind: allow
+      schedule: '0 9-17 * * 1-5'  # Business hours, weekdays only
+      duration: 8h
+      applications:
+        - '*'
+    - kind: deny
+      schedule: '0 0-8,18-23 * * *'  # Outside business hours
+      duration: 10h
+      applications:
+        - '*'

@@ -1,0 +1,23 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-demo-dev
+  namespace: argocd
+spec:
+  project: dev-project
+
+  source:
+    repoURL: https://github.com/damauer/k8s-app-manifests
+    targetRevision: main
+    path: apps/dev/nginx-demo
+
+  destination:
+    server: https://kubernetes.default.svc  # DEV cluster (in-cluster)
+    namespace: default
+
+  syncPolicy:
+    automated:
+      prune: true    # Automatically delete resources when removed from Git
+      selfHeal: true # Automatically sync when cluster state drifts from Git
+    syncOptions:
+      - CreateNamespace=true

@@ -1,0 +1,34 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: dev-project
+  namespace: argocd
+spec:
+  description: Development environment applications
+
+  # Source repositories that applications can be deployed from
+  sourceRepos:
+    - 'https://github.com/damauer/k8s-app-manifests'
+
+  # Destination clusters and namespaces that applications can be deployed to
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc  # DEV cluster (in-cluster)
+
+  # Cluster resources that may be managed
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Namespace resources that may be managed
+  namespaceResourceWhitelist:
+    - group: '*'
+      kind: '*'
+
+  # Sync policies
+  syncWindows:
+    - kind: allow
+      schedule: '* * * * *'  # Always allow syncs in DEV
+      duration: 24h
+      applications:
+        - '*'

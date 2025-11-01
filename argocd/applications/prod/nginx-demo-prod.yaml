@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: nginx-demo-prod
+  namespace: argocd
+spec:
+  project: prod-project
+
+  source:
+    repoURL: https://github.com/damauer/k8s-app-manifests
+    targetRevision: main
+    path: apps/prod/nginx-demo
+
+  destination:
+    # This will be updated after PROD cluster is registered with ArgoCD
+    # Use: argocd cluster add <prod-cluster-context>
+    server: https://PROD_CLUSTER_URL:6443  # Placeholder - update after PROD cluster deployment
+    namespace: default
+
+  syncPolicy:
+    # Production uses manual sync for more control
+    syncOptions:
+      - CreateNamespace=true
+    # Uncomment after initial validation to enable auto-sync
+    # automated:
+    #   prune: false   # Safer for production - don't auto-delete
+    #   selfHeal: true # Auto-sync when drift detected
