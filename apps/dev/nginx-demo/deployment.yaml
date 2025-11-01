@@ -6,7 +6,7 @@ metadata:
     app: nginx-demo
     environment: dev
 spec:
-  replicas: 4
+  replicas: 5
   selector:
     matchLabels:
       app: nginx-demo
